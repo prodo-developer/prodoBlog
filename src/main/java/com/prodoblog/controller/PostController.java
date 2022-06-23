@@ -1,10 +1,8 @@
 package com.prodoblog.controller;
 
+import com.prodoblog.request.PostCreate;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -22,6 +20,11 @@ import java.util.Map;
  * 단순처리
  * @RequestParam String title, @RequestParam String content
  * log.info("title={}, cotent={}", title, content);
+ *
+ * public String post(@RequestParam Map<String, String> params)
+ * log.info("params={}", params);
+ *
+ * json는 @ModelAttribute 방식이 아닌 @RequestBody 방식으로 가져온다.
  */
 
 @RestController
@@ -35,7 +38,7 @@ public class PostController {
 
     // 글등록
    @PostMapping("/posts")
-   public String post(@RequestParam Map<String, String> params) {
+   public String post(@RequestBody PostCreate params) {
         log.info("params={}", params);
         return "Hello World";
    }
