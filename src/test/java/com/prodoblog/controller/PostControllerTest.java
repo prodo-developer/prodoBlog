@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @WebMvcTest
 class PostControllerTest {
 
@@ -24,12 +23,30 @@ class PostControllerTest {
     void test() throws Exception {
         // 글 제목
         // 글 내용
+        // 사용자
+            // id, user, level
 
         // expected
         mockMvc.perform(post("/posts")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("title", "글 제목 입니다.")
                         .param("content", "글 내용 입니다 prodo")
+                )   // application/json
+                .andExpect(status().isOk()) // 서버통신
+                .andExpect(MockMvcResultMatchers.content().string("Hello World")) // 해당문자가 일치하는가?
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("/posts 요청시 json 방식으로 출력한다.")
+    void jsonTest() throws Exception {
+        // 글 제목
+        // 글 내용
+
+        // expected
+        mockMvc.perform(post("/posts")
+                        .contentType(MediaType.APPLICATION_JSON) // 안쓰면 타입에러나서 415 에러남
+                        .content("{\"title\": \"제목 등록\", \"content\": \"제이슨 내용입니다.\"}")
                 )   // application/json
                 .andExpect(status().isOk()) // 서버통신
                 .andExpect(MockMvcResultMatchers.content().string("Hello World")) // 해당문자가 일치하는가?
