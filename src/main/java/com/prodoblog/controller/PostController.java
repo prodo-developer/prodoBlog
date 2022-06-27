@@ -38,8 +38,28 @@ public class PostController {
 
     // 글등록
    @PostMapping("/posts")
-   public String post(@RequestBody PostCreate params) {
+   public String post(@RequestBody PostCreate params) throws Exception {
+        // 데이터를 검증하는 이유
+
+        // 1. 클라이언트 개발자가 깜박할 수 있음. 실수로 값을 안보낼 수 있다.
+        // 2. bug로 누락될 수있다.
+        // 3. 외부에서 조작해서 보낼수있다. (보안문제)
+        // 4. DB에 값을 저장할 때 의도치 않은 오류가 발생할 수 있다.
+        // 5. 서버 개발자의 대한 편안함을 위해서
+
         log.info("params={}", params);
+        
+        String title = params.getTitle();
+        String content = params.getContent();
+        
+        if(title == null || title.equals("")) {
+            throw new Exception("타이틀값이 없음!");    
+        }
+
+        if(content == null || content.equals("")) {
+            throw new Exception("제목이 없음!");
+        }
+        
         return "Hello World";
    }
 }

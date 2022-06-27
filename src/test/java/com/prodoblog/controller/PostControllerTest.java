@@ -52,4 +52,17 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.content().string("Hello World")) // 해당문자가 일치하는가?
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("/posts 요청시 title값은 필수입니다.")
+    void test2() throws Exception {
+        // expected
+        mockMvc.perform(post("/posts")
+                        .contentType(MediaType.APPLICATION_JSON) // 안쓰면 타입에러나서 415 에러남
+                        .content("{\"title\": \"\", \"content\": \"제이슨 내용입니다.\"}")
+                )   // application/json
+                .andExpect(status().isOk()) // 서버통신
+                .andExpect(MockMvcResultMatchers.content().string("Hello World")) // 해당문자가 일치하는가?
+                .andDo(print());
+    }
 }
