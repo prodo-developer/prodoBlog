@@ -2,8 +2,13 @@ package com.prodoblog.controller;
 
 import com.prodoblog.request.PostCreate;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,8 +30,21 @@ import java.util.Map;
  * log.info("params={}", params);
  *
  * json는 @ModelAttribute 방식이 아닌 @RequestBody 방식으로 가져온다.
+ *
+ * 단순검사
+ *
+ *         String title = params.getTitle();
+ *         String content = params.getContent();
+ *
+ *
+ * if(title == null || title.equals("")) {
+ *   throw new Exception("타이틀값이 없음!");
+ * }
+ *
+ * if(content == null || content.equals("")) {
+ *   throw new Exception("제목이 없음!");
+ * }
  */
-
 @RestController
 @Slf4j
 public class PostController {
@@ -38,7 +56,7 @@ public class PostController {
 
     // 글등록
    @PostMapping("/posts")
-   public String post(@RequestBody PostCreate params) throws Exception {
+   public Map<String, String> post(@RequestBody @Valid PostCreate params, BindingResult result) throws Exception {
         // 데이터를 검증하는 이유
 
         // 1. 클라이언트 개발자가 깜박할 수 있음. 실수로 값을 안보낼 수 있다.
@@ -49,17 +67,17 @@ public class PostController {
 
         log.info("params={}", params);
         
-        String title = params.getTitle();
-        String content = params.getContent();
-        
-        if(title == null || title.equals("")) {
-            throw new Exception("타이틀값이 없음!");    
-        }
+        if(result.hasErrors()) {
+            List<FieldError> fieldErrors = result.getFieldErrors();
+            FieldError fieldFirstError = fieldErrors.get(0);
+            String fieldName = fieldFirstError.getField(); //title
+            String errorMessage = fieldFirstError.getDefaultMessage(); // 에러메시지
 
-        if(content == null || content.equals("")) {
-            throw new Exception("제목이 없음!");
+            Map<String, String> error = new HashMap<>();
+            error.put(fieldName, errorMessage);
+            return error;
         }
         
-        return "Hello World";
+        return Map.of();
    }
 }
