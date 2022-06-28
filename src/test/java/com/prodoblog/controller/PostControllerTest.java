@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
@@ -49,7 +50,7 @@ class PostControllerTest {
                         .content("{\"title\": \"제목 등록\", \"content\": \"제이슨 내용입니다.\"}")
                 )   // application/json
                 .andExpect(status().isOk()) // 서버통신
-                .andExpect(MockMvcResultMatchers.content().string("Hello World")) // 해당문자가 일치하는가?
+                .andExpect(MockMvcResultMatchers.content().string("{}")) // 해당문자가 일치하는가?
                 .andDo(print());
     }
 
@@ -59,10 +60,12 @@ class PostControllerTest {
         // expected
         mockMvc.perform(post("/posts")
                         .contentType(MediaType.APPLICATION_JSON) // 안쓰면 타입에러나서 415 에러남
-                        .content("{\"title\": \"\", \"content\": \"제이슨 내용입니다.\"}")
+                // {"title": ""}
+                // {"title": null}
+                        .content("{\"title\": null, \"content\": \"제이슨 내용입니다.\"}")
                 )   // application/json
                 .andExpect(status().isOk()) // 서버통신
-                .andExpect(MockMvcResultMatchers.content().string("Hello World")) // 해당문자가 일치하는가?
+                .andExpect(jsonPath("$.title").value("타이틀을 입력해주세요")) // 해당문자가 일치하는가?
                 .andDo(print());
     }
 }
