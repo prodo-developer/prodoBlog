@@ -55,8 +55,8 @@ public class PostController {
     }
 
     // 글등록
-   @PostMapping("/posts")
-   public Map<String, String> post(@RequestBody @Valid PostCreate params, BindingResult result) throws Exception {
+    @PostMapping("/posts")
+    public Map<String, String> post(@RequestBody @Valid PostCreate params){
         // 데이터를 검증하는 이유
 
         // 1. 클라이언트 개발자가 깜박할 수 있음. 실수로 값을 안보낼 수 있다.
@@ -66,18 +66,21 @@ public class PostController {
         // 5. 서버 개발자의 대한 편안함을 위해서
 
         log.info("params={}", params);
-        
-        if(result.hasErrors()) {
-            List<FieldError> fieldErrors = result.getFieldErrors();
-            FieldError fieldFirstError = fieldErrors.get(0);
-            String fieldName = fieldFirstError.getField(); //title
-            String errorMessage = fieldFirstError.getDefaultMessage(); // 에러메시지
 
-            Map<String, String> error = new HashMap<>();
-            error.put(fieldName, errorMessage);
-            return error;
-        }
-        
+//        if(result.hasErrors()) {
+//            List<FieldError> fieldErrors = result.getFieldErrors();
+//            FieldError fieldFirstError = fieldErrors.get(0);
+//            String fieldName = fieldFirstError.getField(); //title
+//            String errorMessage = fieldFirstError.getDefaultMessage(); // 에러메시지
+//
+//            Map<String, String> error = new HashMap<>();
+//            error.put(fieldName, errorMessage);
+//            return error;
+//        }
+
         return Map.of();
-   }
+    }
+
+    // @ControllerAdvice를 통해 모든 컨트롤러를 검증통제 가능.
+
 }
