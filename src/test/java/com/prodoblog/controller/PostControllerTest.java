@@ -63,9 +63,14 @@ class PostControllerTest {
                 // {"title": ""}
                 // {"title": null}
                         .content("{\"title\": null, \"content\": \"제이슨 내용입니다.\"}")
+//                        .content("{\"title\": null, \"content\": null}") // 둘다 null 값일때
                 )   // application/json
-                .andExpect(status().isOk()) // 서버통신
-                .andExpect(jsonPath("$.title").value("타이틀을 입력해주세요")) // 해당문자가 일치하는가?
+//                .andExpect(status().isOk()) // 서버통신
+//                .andExpect(jsonPath("$.title").value("타이틀을 입력해주세요.")) // 해당문자가 일치하는가?
+                .andExpect(status().isBadRequest()) // 서버통신
+                .andExpect(jsonPath("$.code").value("400")) // 해당문자가 일치하는가?
+                .andExpect(jsonPath("$.message").value("잘못된 요청입니다.")) // 해당문자가 일치하는가?
+                .andExpect(jsonPath("$.validation.title").value("타이틀을 입력해주세요.")) // 해당문자가 일치하는가?
                 .andDo(print());
     }
 }
