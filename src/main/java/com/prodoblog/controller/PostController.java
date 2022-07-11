@@ -1,6 +1,8 @@
 package com.prodoblog.controller;
 
 import com.prodoblog.request.PostCreate;
+import com.prodoblog.service.PostService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -46,8 +48,11 @@ import java.util.Map;
  * }
  */
 @RestController
+@RequiredArgsConstructor
 @Slf4j
 public class PostController {
+
+    private final PostService postService;
 
     @GetMapping("/getPosts")
     public String getPosts() {
@@ -56,7 +61,7 @@ public class PostController {
 
     // 글등록
     @PostMapping("/posts")
-    public Map<String, String> post(@RequestBody @Valid PostCreate params){
+    public Map<String, String> post(@RequestBody @Valid PostCreate request){
         // 데이터를 검증하는 이유
 
         // 1. 클라이언트 개발자가 깜박할 수 있음. 실수로 값을 안보낼 수 있다.
@@ -65,8 +70,8 @@ public class PostController {
         // 4. DB에 값을 저장할 때 의도치 않은 오류가 발생할 수 있다.
         // 5. 서버 개발자의 대한 편안함을 위해서
 
-        log.info("params={}", params);
-
+        log.info("request={}", request);
+        postService.write(request);
 //        if(result.hasErrors()) {
 //            List<FieldError> fieldErrors = result.getFieldErrors();
 //            FieldError fieldFirstError = fieldErrors.get(0);
@@ -77,6 +82,8 @@ public class PostController {
 //            error.put(fieldName, errorMessage);
 //            return error;
 //        }
+
+
 
         return Map.of();
     }
