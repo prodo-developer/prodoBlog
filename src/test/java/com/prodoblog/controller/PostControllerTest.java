@@ -1,7 +1,9 @@
 package com.prodoblog.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prodoblog.domain.Post;
 import com.prodoblog.repository.PostRepository;
+import com.prodoblog.request.PostCreate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -22,6 +25,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc // MockMvc용 테스트
 @SpringBootTest // 통합테스트 (MockMvc 사용 못함)
 class PostControllerTest {
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private MockMvc mockMvc; // 컨트롤러에 요청
@@ -52,16 +58,25 @@ class PostControllerTest {
     @Test
     @DisplayName("/posts 요청시 json 방식으로 출력한다.")
     void jsonTest() throws Exception {
-        // 글 제목
-        // 글 내용
+        // given
+//        PostCreate request = new PostCreate("제목입니다.", "내용입니다.");
+        PostCreate request = PostCreate.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .build();
+
+        // json 문자 필터링
+//        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(request);
 
         // expected
         mockMvc.perform(post("/posts")
                         .contentType(MediaType.APPLICATION_JSON) // 안쓰면 타입에러나서 415 에러남
-                        .content("{\"title\": \"제목 등록\", \"content\": \"제이슨 내용입니다.\"}")
+                        .content(json)
+//                        .content("{\"title\": \"제목 등록\", \"content\": \"제이슨 내용입니다.\"}")
                 )   // application/json
                 .andExpect(status().isOk()) // 서버통신
-                .andExpect(MockMvcResultMatchers.content().string("{}")) // 해당문자가 일치하는가?
+                .andExpect(content().string("{}")) // 해당문자가 일치하는가?
                 .andDo(print());
         
         // DB -> post 1개 등록
@@ -70,13 +85,20 @@ class PostControllerTest {
     @Test
     @DisplayName("/posts 요청시 title값은 필수입니다.")
     void test2() throws Exception {
+        // given
+        PostCreate request = PostCreate.builder()
+                .content("내용입니다.")
+                .build();
+
+        String json = objectMapper.writeValueAsString(request);
+
         // expected
         mockMvc.perform(post("/posts")
                         .contentType(MediaType.APPLICATION_JSON) // 안쓰면 타입에러나서 415 에러남
                 // {"title": ""}
                 // {"title": null}
-                        .content("{\"title\": null, \"content\": \"제이슨 내용입니다.\"}")
-//                        .content("{\"title\": null, \"content\": null}") // 둘다 null 값일때
+//                        .content("{\"title\": null, \"content\": \"제이슨 내용입니다.\"}")
+                                .content(json)
                 )   // application/json
 //                .andExpect(status().isOk()) // 서버통신
 //                .andExpect(jsonPath("$.title").value("타이틀을 입력해주세요.")) // 해당문자가 일치하는가?
@@ -94,10 +116,18 @@ class PostControllerTest {
         // 매번 삭제해줘야되는 신경쓰기 번거로움
         postRepository.deleteAll();
 
+        PostCreate request = PostCreate.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .build();
+
+        String json = objectMapper.writeValueAsString(request);
+
         // when
         mockMvc.perform(post("/posts")
                         .contentType(MediaType.APPLICATION_JSON) // 안쓰면 타입에러나서 415 에러남
-                        .content("{\"title\": \"제목입니다.\", \"content\": \"내용입니다.\"}")
+                        .content(json)
+//                        .content("{\"title\": \"제목입니다.\", \"content\": \"내용입니다.\"}")
                 )   // application/json
                 .andExpect(status().isOk()) // 서버통신
                 .andDo(print());
@@ -109,6 +139,6 @@ class PostControllerTest {
 
         Post post = postRepository.findAll().get(0);
         assertEquals("제목입니다.", post.getTitle());
-        assertEquals("내용입니다.3", post.getContent());
+        assertEquals("내용입니다.", post.getContent());
     }
 }
