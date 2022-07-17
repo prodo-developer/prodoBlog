@@ -1,7 +1,7 @@
 package com.prodoblog.response;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +19,6 @@ import java.util.Map;
  * }
  */
 @Getter
-@RequiredArgsConstructor
 public class ErrorResponse {
 
     private final String code;
@@ -27,6 +26,12 @@ public class ErrorResponse {
     
     // null 일수 있어서 해쉬맵으로 셋팅
     private final Map<String, String> validation = new HashMap<>();
+
+    @Builder
+    public ErrorResponse(String code, String message) {
+        this.code = code;
+        this.message = message;
+    }
 
     public void addValidation(String fieldName, String errorMessage) {
         this.validation.put(fieldName, errorMessage);

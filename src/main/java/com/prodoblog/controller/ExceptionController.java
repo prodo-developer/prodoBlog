@@ -42,8 +42,14 @@ public class ExceptionController {
     @ResponseBody
     public ErrorResponse invalidRequestHandlerResponse(MethodArgumentNotValidException e) {
 
-        ErrorResponse response = new ErrorResponse("400", "잘못된 요청입니다.");
-        List<FieldError> fieldErrors = e.getFieldErrors();
+//        ErrorResponse response = new ErrorResponse("400", "잘못된 요청입니다.");
+        // builer로 전환
+        ErrorResponse response = ErrorResponse.builder()
+                .code("400")
+                .message("잘못된 요청입니다.")
+                .build();
+
+                List<FieldError> fieldErrors = e.getFieldErrors();
 
         for (FieldError fieldError : fieldErrors) {
             response.addValidation(fieldError.getField(), fieldError.getDefaultMessage());
