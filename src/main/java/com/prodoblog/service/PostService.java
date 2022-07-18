@@ -15,12 +15,18 @@ public class PostService {
     private final PostRepository postRepository;
 
     public void write(PostCreate postCreate) {
-        // postCreate -> Entity
-
-        Post post = new Post(postCreate.getTitle(), postCreate.getContent());
-//      지향하지 않음 (public 일때)
+//      방법1 : 지향하지 않음 (public 일때)
 //      post.title = postCreate.getTitle();
 //      post.content = postCreate.content();
+
+//      방법2: postCreate -> Entity
+//      Post post = new Post(postCreate.getTitle(), postCreate.getContent());
+
+//      방법3: builder로 전환
+        Post post = Post.builder()
+                .title(postCreate.getTitle())
+                .content(postCreate.getContent())
+                .build();
 
         postRepository.save(post);
     }

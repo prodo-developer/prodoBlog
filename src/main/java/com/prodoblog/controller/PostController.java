@@ -1,5 +1,6 @@
 package com.prodoblog.controller;
 
+import com.prodoblog.domain.Post;
 import com.prodoblog.request.PostCreate;
 import com.prodoblog.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -60,34 +61,48 @@ public class PostController {
     }
 
     // 글등록
-    @PostMapping("/posts")
-    public Map<String, String> post(@RequestBody @Valid PostCreate request){
-        // 데이터를 검증하는 이유
-
-        // 1. 클라이언트 개발자가 깜박할 수 있음. 실수로 값을 안보낼 수 있다.
-        // 2. bug로 누락될 수있다.
-        // 3. 외부에서 조작해서 보낼수있다. (보안문제)
-        // 4. DB에 값을 저장할 때 의도치 않은 오류가 발생할 수 있다.
-        // 5. 서버 개발자의 대한 편안함을 위해서
-
-        log.info("request={}", request);
-        postService.write(request);
-//        if(result.hasErrors()) {
-//            List<FieldError> fieldErrors = result.getFieldErrors();
-//            FieldError fieldFirstError = fieldErrors.get(0);
-//            String fieldName = fieldFirstError.getField(); //title
-//            String errorMessage = fieldFirstError.getDefaultMessage(); // 에러메시지
+//    @PostMapping("/posts")
+//    public Map<String, String> post(@RequestBody @Valid PostCreate request){
+//        // 데이터를 검증하는 이유
 //
-//            Map<String, String> error = new HashMap<>();
-//            error.put(fieldName, errorMessage);
-//            return error;
-//        }
-
-
-
-        return Map.of();
-    }
+//        // 1. 클라이언트 개발자가 깜박할 수 있음. 실수로 값을 안보낼 수 있다.
+//        // 2. bug로 누락될 수있다.
+//        // 3. 외부에서 조작해서 보낼수있다. (보안문제)
+//        // 4. DB에 값을 저장할 때 의도치 않은 오류가 발생할 수 있다.
+//        // 5. 서버 개발자의 대한 편안함을 위해서
+//
+////        if(result.hasErrors()) {
+////            List<FieldError> fieldErrors = result.getFieldErrors();
+////            FieldError fieldFirstError = fieldErrors.get(0);
+////            String fieldName = fieldFirstError.getField(); //title
+////            String errorMessage = fieldFirstError.getDefaultMessage(); // 에러메시지
+////
+////            Map<String, String> error = new HashMap<>();
+////            error.put(fieldName, errorMessage);
+////            return error;
+////        }
+//
+//        log.info("request={}", request);
+//        postService.write(request);
+//
+//        return Map.of();
+//    }
 
     // @ControllerAdvice를 통해 모든 컨트롤러를 검증통제 가능.
+
+    // 글등록
+    @PostMapping("/posts")
+    public void post(@RequestBody @Valid PostCreate request){
+        // 데이터를 검증하는 이유
+
+        log.info("request={}", request);
+        // case1. 저장한 데이터 Entity -> response로 응답하기
+        // case2. 저장한 데이터에 primary_id -> response로 응답하기
+        //      Client에는 수신한 id를 post 조회 API를 통해서 글 데이터를 수신받음
+        // Bad Case: 서버에서 반드시 이렇게 할겁니다 fix
+        //              -> 서버에서 유연하게 대응하는것이 좋습니다.
+        //              -> 한번에 일괄적으로 처리되는 케이스가 없습니다. 잘 관리하는 형태가 필요.
+        postService.write(request);
+    }
 
 }
