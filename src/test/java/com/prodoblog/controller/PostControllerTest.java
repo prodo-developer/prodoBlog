@@ -12,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -76,7 +75,7 @@ class PostControllerTest {
 //                        .content("{\"title\": \"제목 등록\", \"content\": \"제이슨 내용입니다.\"}")
                 )   // application/json
                 .andExpect(status().isOk()) // 서버통신
-                .andExpect(content().string("{}")) // 해당문자가 일치하는가?
+                .andExpect(content().string("")) // 해당문자가 일치하는가?
                 .andDo(print());
         
         // DB -> post 1개 등록
