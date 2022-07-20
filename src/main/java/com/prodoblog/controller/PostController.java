@@ -105,4 +105,17 @@ public class PostController {
         postService.write(request);
     }
 
+    /**
+     * /posts 글전 체 조회(거ㅏㅁ색+ 페이징)
+     * /posts/{postId} -> 글 한개만 조회
+     * (name= "postId") 안적으면 그냥 아이디로 postId 해도됨
+     *
+     * josn 형태로 반환
+     */
+    @GetMapping("/posts/{postId}")
+    public Post get(@PathVariable(name= "postId") Long id) {
+        Post post = postService.get(id);
+        return post;
+    }
+    
 }

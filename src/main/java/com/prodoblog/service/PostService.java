@@ -30,4 +30,14 @@ public class PostService {
 
         postRepository.save(post);
     }
+
+    public Post get(Long id) {
+        // 가져와서 즉시 꺼내는것이 좋음
+//        Optional<Post> postOptional = postRepository.findById(id);
+
+        Post post = postRepository.findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+
+        return post;
+    }
 }
