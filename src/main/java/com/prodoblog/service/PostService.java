@@ -3,6 +3,7 @@ package com.prodoblog.service;
 import com.prodoblog.domain.Post;
 import com.prodoblog.repository.PostRepository;
 import com.prodoblog.request.PostCreate;
+import com.prodoblog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,12 +32,25 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public Post get(Long id) {
+    public PostResponse get(Long id) {
         // 가져와서 즉시 꺼내는것이 좋음
 //        Optional<Post> postOptional = postRepository.findById(id);
 
         Post post = postRepository.findById(id)
-                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+
+        PostResponse response = PostResponse.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .build();
+
+        return response;
+    }
+
+    public Post getRss(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
 
         return post;
     }

@@ -2,17 +2,13 @@ package com.prodoblog.controller;
 
 import com.prodoblog.domain.Post;
 import com.prodoblog.request.PostCreate;
+import com.prodoblog.response.PostResponse;
 import com.prodoblog.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * SSR -> JSP, thymeleaf, mustache, freemaker
@@ -113,9 +109,16 @@ public class PostController {
      * josn 형태로 반환
      */
     @GetMapping("/posts/{postId}")
-    public Post get(@PathVariable(name= "postId") Long id) {
-        Post post = postService.get(id);
+    public PostResponse get(@PathVariable(name= "postId") Long id) {
+        PostResponse response = postService.get(id);
+        // 응답클래스를 분리하세요 (서비스 정책에 맞게)
+        return response;
+    }
+
+    // 같은 정책으로 체크할경우 동일하게 들어감(타이틀값 테스트트)
+   @GetMapping("/posts/{postId}/rss")
+    public Post getRss(@PathVariable(name= "postId") Long id) {
+        Post post = postService.getRss(id);
         return post;
     }
-    
 }

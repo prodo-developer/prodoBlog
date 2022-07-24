@@ -26,4 +26,11 @@ public class Post {
         this.title = title;
         this.content = content;
     }
+
+    // 10글자만 가져오도록
+    public String getTitle() {
+        // 서비스의 정책을 넣지마세요 절대!!!
+//        return this.title.substring(0,10);
+        return title;
+    }
 }
