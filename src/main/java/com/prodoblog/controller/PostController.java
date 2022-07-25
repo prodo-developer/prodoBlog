@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * SSR -> JSP, thymeleaf, mustache, freemaker
@@ -102,7 +103,7 @@ public class PostController {
     }
 
     /**
-     * /posts 글전 체 조회(거ㅏㅁ색+ 페이징)
+     * /posts 글전 체 조회(검색+ 페이징)
      * /posts/{postId} -> 글 한개만 조회
      * (name= "postId") 안적으면 그냥 아이디로 postId 해도됨
      *
@@ -110,9 +111,8 @@ public class PostController {
      */
     @GetMapping("/posts/{postId}")
     public PostResponse get(@PathVariable(name= "postId") Long id) {
-        PostResponse response = postService.get(id);
         // 응답클래스를 분리하세요 (서비스 정책에 맞게)
-        return response;
+        return postService.get(id);
     }
 
     // 같은 정책으로 체크할경우 동일하게 들어감(타이틀값 테스트트)
@@ -120,5 +120,12 @@ public class PostController {
     public Post getRss(@PathVariable(name= "postId") Long id) {
         Post post = postService.getRss(id);
         return post;
+    }
+
+    // 조회 API
+    // 여러개의 글을 조회 API
+    @GetMapping("/posts")
+    public List<PostResponse> getList() {
+        return postService.getList();
     }
 }
