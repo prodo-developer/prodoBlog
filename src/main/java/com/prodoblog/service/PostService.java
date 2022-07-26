@@ -57,12 +57,20 @@ public class PostService {
         return post;
     }
 
+//    public List<PostResponse> getList() {
+//        return postRepository.findAll().stream()
+//                .map(post -> PostResponse.builder()
+//                        .id(post.getId())
+//                        .title(post.getTitle())
+//                        .content(post.getContent())
+//                        .build())
+//                .collect(Collectors.toList());
+//    }
+
+    // 자주사용하는 빌더 패턴은 생성자 오버로딩을 통해 아래와 같이 리팩토링
     public List<PostResponse> getList() {
         return postRepository.findAll().stream()
-                .map(post -> PostResponse.builder()
-                        .id(post.getId())
-                        .title(post.getTitle())
-                        .build())
+                .map(PostResponse::new)
                 .collect(Collectors.toList());
     }
 }

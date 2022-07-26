@@ -1,5 +1,6 @@
 package com.prodoblog.response;
 
+import com.prodoblog.domain.Post;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,6 +12,13 @@ public class PostResponse {
     private final Long id;
     private final String title;
     private final String content;
+
+    // 생성자 오버로딩
+    public PostResponse(Post post) {
+        this.id = post.getId();
+        this.title = post.getTitle();
+        this.content = post.getContent();
+    }
 
     // 방법1 빌더를 직접 메서드에 달아주고 필터링하기
     @Builder
