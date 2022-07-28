@@ -6,6 +6,7 @@ import com.prodoblog.response.PostResponse;
 import com.prodoblog.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -124,8 +125,11 @@ public class PostController {
 
     // 조회 API
     // 여러개의 글을 조회 API
+    // @RequestParam int page 에서 개선  -> 0이 아닌 1부터 시작하도록
+    // @PageableDefault를 하면 디폴트가 10개씩 가져온다.
+    // @PageableDefault(size = 5) 도 가능
     @GetMapping("/posts")
-    public List<PostResponse> getList() {
-        return postService.getList();
+    public List<PostResponse> getList(Pageable page) {
+        return postService.getList(page);
     }
 }

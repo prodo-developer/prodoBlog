@@ -8,10 +8,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.data.domain.Sort.DEFAULT_DIRECTION;
 
 @Slf4j
 @Service
@@ -75,10 +78,14 @@ public class PostService {
 //                .collect(Collectors.toList());
 
     // 자주사용하는 빌더 패턴은 생성자 오버로딩을 통해 아래와 같이 리팩토링
-    public List<PostResponse> getList(int page) {
+    public List<PostResponse> getList(Pageable page) {
         // web -> page 1 -> 0
-        Pageable pageable = PageRequest.of(page, 5);
-        return postRepository.findAll(pageable).stream()
+        // Sort.by 내림차순
+
+        // 아래에 수동으로 만든 페이지가 의미없음
+//        Pageable pageable = PageRequest.of(page, 5, Sort.by(DEFAULT_DIRECTION.DESC, "id"));
+
+        return postRepository.findAll(page).stream()
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
     }
