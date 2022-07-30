@@ -9,9 +9,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -173,38 +178,30 @@ class PostControllerTest {
     @DisplayName("글 여러개 조회")
     void test5() throws Exception {
         // given
-        Post post1 = Post.builder()
-                    .title("title_1")
-                    .content("content_1")
-                    .build();
-
-        postRepository.save(post1);
-
-        Post post2 = Post.builder()
-                    .title("title_2")
-                    .content("content_2")
-                    .build();
-
-        postRepository.save(post2);
-
+        List<Post> requestPost = IntStream.range(1, 31)
+                .mapToObj(i -> Post.builder()
+                        .title("프로도 제목 : " + i)
+                        .content("매지션 내용 : " + i)
+                        .build())
+                .collect(Collectors.toList());
+        postRepository.saveAll(requestPost);
 
         // expected (when&then)
-        mockMvc.perform(get("/posts")
+        // 1페이지, 정렬(내림차순), 5개만
+        // mockMvc.perform(get("/posts?page=1&sort=id,desc&size=5")
+        // 방법 2
+        // application.yml에서 default-page-size를 셋팅하면 생략 가능하다.
+        mockMvc.perform(get("/posts?page=1&sort=id,desc")
                             .contentType(MediaType.APPLICATION_JSON)) // 안쓰면 타입에러나서 415 에러남
                         .andExpect(status().isOk()) // 서버통신
-                        /**
-                         * {id: ..., title : ...}
-                         * -> [{id: ..., title : ...}, {id: ..., title : ...}]
-                         */
-                        .andExpect(jsonPath("$.length()", is(2)))
-                        .andExpect(jsonPath("$[0].id").value(post1.getId()))
-                        .andExpect(jsonPath("$[0].title").value("title_1"))
-                        .andExpect(jsonPath("$[0].content").value("content_1"))
-                        .andExpect(jsonPath("$[1].id").value(post2.getId()))
-                        .andExpect(jsonPath("$[1].title").value("title_2"))
-                        .andExpect(jsonPath("$[1].content").value("content_2"))
+                        .andExpect(jsonPath("$.length()", is(5)))
+                        .andExpect(jsonPath("$[0].id").value(30))
+                        .andExpect(jsonPath("$[0].title").value("프로도 제목 : 30"))
+                        .andExpect(jsonPath("$[0].content").value("매지션 내용 : 30"))
                         .andDo(print());
 
         // then
     }
+
+
 }

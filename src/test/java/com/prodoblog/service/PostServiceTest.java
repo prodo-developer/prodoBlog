@@ -3,14 +3,23 @@ package com.prodoblog.service;
 import com.prodoblog.domain.Post;
 import com.prodoblog.repository.PostRepository;
 import com.prodoblog.request.PostCreate;
+import com.prodoblog.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @SpringBootTest // 통합테스트 (MockMvc 사용 못함)
 class PostServiceTest {
@@ -57,13 +66,62 @@ class PostServiceTest {
         postRepository.save(reqPost);
 
         // Long postID = 1L;
+
         // when
-        Post post = postService.get(reqPost.getId());
+        PostResponse response = postService.get(reqPost.getId());
 
         // then
-        assertNotNull(post);
+        assertNotNull(response);
         assertEquals(1L, postRepository.count());
-        assertEquals("foo", post.getTitle());
-        assertEquals("bar", post.getContent());
+        assertEquals("foo", response.getTitle());
+        assertEquals("bar", response.getContent());
+    }
+
+//    @Test
+//    @DisplayName("글 여러개 조회")
+//    void readListTest() {
+//        // given
+//        postRepository.saveAll(List.of(
+//                Post.builder()
+//                        .title("foo1")
+//                        .content("bar1")
+//                        .build(),
+//                Post.builder()
+//                        .title("foo2")
+//                        .content("bar2")
+//                        .build()
+//        ));
+//
+//
+//        // when
+//        List<PostResponse> postList = postService.getList();
+//
+//        // then
+//        assertEquals(2L, postList.size());
+//    }
+
+    @Test
+    @DisplayName("글 1페이지 조회")
+    void onePageTest() {
+        // given (30개)
+        List<Post> requestPost = IntStream.range(1, 31)
+                                .mapToObj(i -> Post.builder()
+                                         .title("프로도 제목 : " + i)
+                                         .content("매지션 내용 : " + i)
+                                         .build())
+                                .collect(Collectors.toList());
+        postRepository.saveAll(requestPost);
+
+        // 수동 페이지 번호 넘기기
+        Pageable pageable = PageRequest.of(0, 5, Sort.by(DESC, "id"));
+
+        // when
+        List<PostResponse> postList = postService.getList(pageable);
+
+        // then
+        // one-indexed-parameters: true를 통해 1부터 인덱스 가져올수있음
+        assertEquals(5L, postList.size());
+        assertEquals("프로도 제목 : 30", postList.get(0).getTitle());
+        assertEquals("프로도 제목 : 26", postList.get(4).getTitle());
     }
 }
