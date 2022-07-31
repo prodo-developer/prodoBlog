@@ -2,6 +2,7 @@ package com.prodoblog.controller;
 
 import com.prodoblog.domain.Post;
 import com.prodoblog.request.PostCreate;
+import com.prodoblog.request.PostSearch;
 import com.prodoblog.response.PostResponse;
 import com.prodoblog.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -128,8 +129,16 @@ public class PostController {
     // @RequestParam int page 에서 개선  -> 0이 아닌 1부터 시작하도록
     // @PageableDefault를 하면 디폴트가 10개씩 가져온다.
     // @PageableDefault(size = 5) 도 가능
+//    @GetMapping("/posts")
+//    public List<PostResponse> getList(Pageable page) {
+//        return postService.getList(page);
+//    }
+
+    // 조회 API
+    // 여러개의 글을 조회 API
+    // querydsl을 사용하기위한 PostSearch 사용
     @GetMapping("/posts")
-    public List<PostResponse> getList(Pageable page) {
-        return postService.getList(page);
+    public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
+        return postService.getList(postSearch);
     }
 }
