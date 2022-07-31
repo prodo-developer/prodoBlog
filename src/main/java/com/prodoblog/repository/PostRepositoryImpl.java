@@ -2,6 +2,7 @@ package com.prodoblog.repository;
 
 import com.prodoblog.domain.Post;
 import com.prodoblog.domain.QPost;
+import com.prodoblog.request.PostSearch;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -15,10 +16,12 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Post> getList(int page) {
+    public List<Post> getList(PostSearch postSearch) {
         return jpaQueryFactory.selectFrom(QPost.post)
-                .limit(10)
-                .offset((long) (page - 1) * 10)
+                .limit(postSearch.getSize())
+//                .offset((long) (postSearch.getPage() -1) * postSearch.getSize())
+                .offset(postSearch.getOffset())
+                .orderBy(QPost.post.id.desc())
                 .fetch();
     }
 }
