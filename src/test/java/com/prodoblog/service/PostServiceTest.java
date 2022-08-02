@@ -3,6 +3,7 @@ package com.prodoblog.service;
 import com.prodoblog.domain.Post;
 import com.prodoblog.repository.PostRepository;
 import com.prodoblog.request.PostCreate;
+import com.prodoblog.request.PostSearch;
 import com.prodoblog.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -104,7 +105,7 @@ class PostServiceTest {
     @DisplayName("글 1페이지 조회")
     void onePageTest() {
         // given (30개)
-        List<Post> requestPost = IntStream.range(1, 31)
+        List<Post> requestPost = IntStream.range(0, 20)
                                 .mapToObj(i -> Post.builder()
                                          .title("프로도 제목 : " + i)
                                          .content("매지션 내용 : " + i)
@@ -113,15 +114,20 @@ class PostServiceTest {
         postRepository.saveAll(requestPost);
 
         // 수동 페이지 번호 넘기기
-        Pageable pageable = PageRequest.of(0, 5, Sort.by(DESC, "id"));
+//        Pageable pageable = PageRequest.of(0, 5, Sort.by(DESC, "id"));
+
+        PostSearch postSearch = PostSearch.builder()
+                                .page(1)
+                                .build();
 
         // when
-        List<PostResponse> postList = postService.getList(pageable);
+        List<PostResponse> postList = postService.getList(postSearch);
 
         // then
         // one-indexed-parameters: true를 통해 1부터 인덱스 가져올수있음
-        assertEquals(5L, postList.size());
-        assertEquals("프로도 제목 : 30", postList.get(0).getTitle());
-        assertEquals("프로도 제목 : 26", postList.get(4).getTitle());
+        assertEquals(10L, postList.size());
+        assertEquals("프로도 제목 : 19", postList.get(0).getTitle());
+//        assertEquals("프로도 제목 : 30", postList.get(0).getTitle());
+//        assertEquals("프로도 제목 : 26", postList.get(4).getTitle());
     }
 }
