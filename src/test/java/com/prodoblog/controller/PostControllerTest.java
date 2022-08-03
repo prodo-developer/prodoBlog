@@ -178,7 +178,7 @@ class PostControllerTest {
     @DisplayName("글 여러개 조회")
     void test5() throws Exception {
         // given
-        List<Post> requestPost = IntStream.range(1, 31)
+        List<Post> requestPost = IntStream.range(1, 20)
                 .mapToObj(i -> Post.builder()
                         .title("프로도 제목 : " + i)
                         .content("매지션 내용 : " + i)
@@ -191,13 +191,36 @@ class PostControllerTest {
         // mockMvc.perform(get("/posts?page=1&sort=id,desc&size=5")
         // 방법 2
         // application.yml에서 default-page-size를 셋팅하면 생략 가능하다.
-        mockMvc.perform(get("/posts?page=1&sort=id,desc")
+        mockMvc.perform(get("/posts?page=1&size=10")
                             .contentType(MediaType.APPLICATION_JSON)) // 안쓰면 타입에러나서 415 에러남
                         .andExpect(status().isOk()) // 서버통신
-                        .andExpect(jsonPath("$.length()", is(5)))
-                        .andExpect(jsonPath("$[0].id").value(30))
-                        .andExpect(jsonPath("$[0].title").value("프로도 제목 : 30"))
-                        .andExpect(jsonPath("$[0].content").value("매지션 내용 : 30"))
+                        .andExpect(jsonPath("$.length()", is(10)))
+                        .andExpect(jsonPath("$[0].title").value("프로도 제목 : 19"))
+                        .andExpect(jsonPath("$[0].content").value("매지션 내용 : 19"))
+                        .andDo(print());
+
+        // then
+    }
+
+    @Test
+    @DisplayName("페이지를 0으로 요청하면 첫 페이지를 가져온다.")
+    void test6() throws Exception {
+        // given
+        List<Post> requestPost = IntStream.range(1, 20)
+                .mapToObj(i -> Post.builder()
+                        .title("프로도 제목 : " + i)
+                        .content("매지션 내용 : " + i)
+                        .build())
+                .collect(Collectors.toList());
+        postRepository.saveAll(requestPost);
+
+        // Offset must not be negative 방지
+        mockMvc.perform(get("/posts?page=0&size=10")
+                            .contentType(MediaType.APPLICATION_JSON)) // 안쓰면 타입에러나서 415 에러남
+                        .andExpect(status().isOk()) // 서버통신
+                        .andExpect(jsonPath("$.length()", is(10)))
+                        .andExpect(jsonPath("$[0].title").value("프로도 제목 : 19"))
+                        .andExpect(jsonPath("$[0].content").value("매지션 내용 : 19"))
                         .andDo(print());
 
         // then
