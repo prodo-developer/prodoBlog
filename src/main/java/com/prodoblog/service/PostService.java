@@ -92,4 +92,8 @@ public class PostService {
                 .collect(Collectors.toList());
 
     }
+
+    public void edit(Long id) {
+
+    }
 }
