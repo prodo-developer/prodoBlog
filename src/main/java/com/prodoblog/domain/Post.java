@@ -1,9 +1,6 @@
 package com.prodoblog.domain;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -32,5 +29,13 @@ public class Post {
         // 서비스의 정책을 넣지마세요 절대!!!
 //        return this.title.substring(0,10);
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

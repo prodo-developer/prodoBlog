@@ -2,6 +2,7 @@ package com.prodoblog.service;
 
 import com.prodoblog.domain.Post;
 import com.prodoblog.repository.PostRepository;
+import com.prodoblog.request.PostEdit;
 import com.prodoblog.request.PostCreate;
 import com.prodoblog.request.PostSearch;
 import com.prodoblog.response.PostResponse;
@@ -93,7 +94,13 @@ public class PostService {
 
     }
 
-    public void edit(Long id) {
+    public void edit(Long id, PostEdit poseEdit) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
 
+        post.setTitle(poseEdit.getTitle());
+        post.setContent(poseEdit.getTitle());
+
+        postRepository.save(post);
     }
 }
