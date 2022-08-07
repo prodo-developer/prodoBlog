@@ -3,6 +3,7 @@ package com.prodoblog.service;
 import com.prodoblog.domain.Post;
 import com.prodoblog.repository.PostRepository;
 import com.prodoblog.request.PostCreate;
+import com.prodoblog.request.PostEdit;
 import com.prodoblog.request.PostSearch;
 import com.prodoblog.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -129,5 +130,30 @@ class PostServiceTest {
         assertEquals("프로도 제목 : 19", postList.get(0).getTitle());
 //        assertEquals("프로도 제목 : 30", postList.get(0).getTitle());
 //        assertEquals("프로도 제목 : 26", postList.get(4).getTitle());
+    }
+
+    @Test
+    @DisplayName("글 제목 수정")
+    void testUpdate() {
+        // given
+        Post post = Post.builder()
+                .title("프로도")
+                .content("관악봉천")
+                .build();
+
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("라이언")
+                .build();
+
+        // when
+        postService.edit(post.getId(), postEdit);
+
+        // then
+        Post changePost = postRepository.findById(post.getId())
+                .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id=" + post.getId()));
+
+        assertEquals("라이언", changePost.getTitle());
     }
 }
