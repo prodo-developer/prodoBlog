@@ -1,6 +1,7 @@
 package com.prodoblog.service;
 
 import com.prodoblog.domain.Post;
+import com.prodoblog.domain.PostEditor;
 import com.prodoblog.repository.PostRepository;
 import com.prodoblog.request.PostEdit;
 import com.prodoblog.request.PostCreate;
@@ -9,6 +10,7 @@ import com.prodoblog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -94,13 +96,37 @@ public class PostService {
 
     }
 
-    public void edit(Long id, PostEdit poseEdit) {
+    @Transactional
+    public PostResponse edit(Long id, PostEdit poseEdit) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
 
-        post.setTitle(poseEdit.getTitle());
-        post.setContent(poseEdit.getTitle());
 
-        postRepository.save(post);
+        // 검증 필터링
+//        if(poseEdit.getTitle() != null) {
+//            editorBuilder.title(poseEdit.getTitle());
+//        }
+//
+//        if(poseEdit.getContent() != null) {
+//            editorBuilder.content(poseEdit.getContent());
+//        }
+//        // 컨텐츠는 그대로 이동
+//        post.edit(editorBuilder.build());
+
+        PostEditor.PostEditorBuilder editorBuilder = post.toEditor();
+
+        // fix안된 변경이 필요한 값들만 수정
+        PostEditor postEditor = editorBuilder
+                .title(poseEdit.getTitle())
+                .content(poseEdit.getContent())
+                .build();
+        post.edit(postEditor);
+
+//        post.change(poseEdit.getTitle(), poseEdit.getContent());
+
+//      트랜잭션을 통해 아래내용을 생략해도 된다.
+//        postRepository.save(post);
+
+        return new PostResponse(post);
     }
 }
