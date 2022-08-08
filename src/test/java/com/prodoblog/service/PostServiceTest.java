@@ -156,4 +156,31 @@ class PostServiceTest {
 
         assertEquals("라이언", changePost.getTitle());
     }
+
+    @Test
+    @DisplayName("글 제목&내용 수정")
+    void testUpdate2() {
+        // given
+        Post post = Post.builder()
+                .title("프로도")
+                .content("관악봉천")
+                .build();
+
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("라이언")
+                .content("관악신림")
+                .build();
+
+        // when
+        postService.edit(post.getId(), postEdit);
+
+        // then
+        Post changePost = postRepository.findById(post.getId())
+                .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id=" + post.getId()));
+
+        assertEquals("라이언", changePost.getTitle());
+        assertEquals("관악신림", changePost.getContent());
+    }
 }
