@@ -31,11 +31,23 @@ public class Post {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    // Setter 대신 직접 체인지하는 로직 만들기
+    // String title, String content 가 아닌 String content, String title인 경우 버그 발견하기 힘듬.
+//    public void change(String title, String content) {
+//        this.title = title;
+//        this.content = content;
+//    }
+
+    // 1. PostEditorBuilder이기때문에 즉, 빌더를 넘기기위해 빌더하지않은 .build를 시키면 안됨.
+    public PostEditor.PostEditorBuilder toEditor() {
+        return PostEditor.builder()
+                .title(title)
+                .content(content);
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    // 2. fix된 post가 넘어옴
+    public void edit(PostEditor postEditor) {
+        title = postEditor.getTitle();
+        content = postEditor.getContent();
     }
 }
