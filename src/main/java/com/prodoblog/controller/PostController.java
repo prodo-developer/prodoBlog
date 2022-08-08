@@ -2,6 +2,7 @@ package com.prodoblog.controller;
 
 import com.prodoblog.domain.Post;
 import com.prodoblog.request.PostCreate;
+import com.prodoblog.request.PostEdit;
 import com.prodoblog.request.PostSearch;
 import com.prodoblog.response.PostResponse;
 import com.prodoblog.service.PostService;
@@ -141,4 +142,11 @@ public class PostController {
     public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
         return postService.getList(postSearch);
     }
+
+    // 클라이언트 선택에 따라 PostResponse 또는 void로 그냥 남기는경우도 있다.
+    @PatchMapping("/posts/{postId}")
+    public PostResponse edit(@PathVariable Long postId, @RequestBody @Valid PostEdit request) {
+        return postService.edit(postId, request);
+    }
+
 }
