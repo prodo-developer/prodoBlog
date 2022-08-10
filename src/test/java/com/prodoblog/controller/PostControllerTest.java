@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prodoblog.domain.Post;
 import com.prodoblog.repository.PostRepository;
 import com.prodoblog.request.PostCreate;
+import com.prodoblog.request.PostEdit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,8 +21,7 @@ import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -224,6 +224,30 @@ class PostControllerTest {
                         .andDo(print());
 
         // then
+    }
+
+    @Test
+    @DisplayName("글 제목 수정")
+    void test7() throws Exception {
+        // given
+        Post post = Post.builder()
+                .title("프로도")
+                .content("관악봉천")
+                .build();
+
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("라이언")
+                .content("관악신림")
+                .build();
+
+        mockMvc.perform(patch("/posts/{postId}", post.getId()) // PATCH /posts/{postId}
+                            .contentType(MediaType.APPLICATION_JSON) // 안쓰면 타입에러나서 415 에러남
+                            .content(objectMapper.writeValueAsString(postEdit)))
+                        .andExpect(status().isOk()) // 서버통신
+                        .andDo(print());
+
     }
 
 
