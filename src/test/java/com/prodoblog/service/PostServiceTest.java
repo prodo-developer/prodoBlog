@@ -1,11 +1,13 @@
 package com.prodoblog.service;
 
 import com.prodoblog.domain.Post;
+import com.prodoblog.exception.PostNotFound;
 import com.prodoblog.repository.PostRepository;
 import com.prodoblog.request.PostCreate;
 import com.prodoblog.request.PostEdit;
 import com.prodoblog.request.PostSearch;
 import com.prodoblog.response.PostResponse;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,8 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @SpringBootTest // 통합테스트 (MockMvc 사용 못함)
@@ -185,7 +186,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("게시글 삭제 테스트")
+    @DisplayName("글 1개 조회 실패 케이스")
     void test6() {
         // given
         Post post = Post.builder()
@@ -194,10 +195,10 @@ class PostServiceTest {
                 .build();
         postRepository.save(post);
 
-        // when
-        postService.delete(post.getId());
+        // excepted
+        assertThrows(PostNotFound.class, () -> {
+                postService.get(post.getId() + 1L);
+        });
 
-        // then
-        assertEquals(0, postRepository.count());
     }
 }
