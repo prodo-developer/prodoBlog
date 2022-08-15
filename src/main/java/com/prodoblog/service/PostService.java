@@ -2,6 +2,7 @@ package com.prodoblog.service;
 
 import com.prodoblog.domain.Post;
 import com.prodoblog.domain.PostEditor;
+import com.prodoblog.exception.PostNotFound;
 import com.prodoblog.repository.PostRepository;
 import com.prodoblog.request.PostEdit;
 import com.prodoblog.request.PostCreate;
@@ -44,7 +45,7 @@ public class PostService {
 //        Optional<Post> postOptional = postRepository.findById(id);
 
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+                .orElseThrow(PostNotFound::new);
 
         return PostResponse.builder()
                 .id(post.getId())
