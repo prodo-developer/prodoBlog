@@ -186,7 +186,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("글 1개 조회 실패 케이스")
+    @DisplayName("글 1개 조회 - 존재하지 않는 글")
     void test6() {
         // given
         Post post = Post.builder()
@@ -199,6 +199,43 @@ class PostServiceTest {
         assertThrows(PostNotFound.class, () -> {
                 postService.get(post.getId() + 1L);
         });
+    }
 
+    @Test
+    @DisplayName("게시글 수정 - 존재하지 않는 글")
+    void test7() {
+        // given
+        Post post = Post.builder()
+                .title("프로도")
+                .content("관악봉천")
+                .build();
+
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("라이언")
+                .build();
+
+        // when
+        assertThrows(PostNotFound.class, () -> {
+            postService.edit(post.getId() + 1L, postEdit);
+        });
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 - 존재하지 않는 글")
+    void test8() {
+        // given
+        Post post = Post.builder()
+                .title("프로도")
+                .content("관악봉천")
+                .build();
+
+        postRepository.save(post);
+
+        // excepted
+        assertThrows(PostNotFound.class, () -> {
+            postService.delete(post.getId() + 1L);
+        });
     }
 }
