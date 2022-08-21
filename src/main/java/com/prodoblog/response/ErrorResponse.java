@@ -1,5 +1,6 @@
 package com.prodoblog.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -19,6 +20,7 @@ import java.util.Map;
  * }
  */
 @Getter
+@JsonInclude(value = JsonInclude.Include.NON_EMPTY) // validation를 보고싶지 않을때, 비어이지 않는 데이터만 보여줌
 public class ErrorResponse {
 
     private final String code;
