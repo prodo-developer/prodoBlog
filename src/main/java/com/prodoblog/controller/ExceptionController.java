@@ -1,5 +1,6 @@
 package com.prodoblog.controller;
 
+import com.prodoblog.exception.PostNotFound;
 import com.prodoblog.response.ErrorResponse;
 import com.prodoblog.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +55,20 @@ public class ExceptionController {
         for (FieldError fieldError : fieldErrors) {
             response.addValidation(fieldError.getField(), fieldError.getDefaultMessage());
         }
+
+        return response;
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(PostNotFound.class)
+    @ResponseBody
+    public ErrorResponse postNotFound(PostNotFound e) {
+
+        // builer로 전환
+        ErrorResponse response = ErrorResponse.builder()
+                .code("404")
+                .message(e.getMessage())
+                .build();
 
         return response;
     }
