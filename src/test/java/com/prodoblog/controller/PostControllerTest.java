@@ -268,5 +268,20 @@ class PostControllerTest {
 
     }
 
+    @Test
+    @DisplayName("존재하지 않는 게시글 조회")
+    void test9() throws Exception{
+        // given
+//        Post post = Post.builder()
+//                .title("프로도")
+//                .content("관악봉천")
+//                .build();
+//
+//        postRepository.save(post);
 
+        mockMvc.perform(delete("/posts/{postId}", 1L) // PATCH /posts/{postId}
+                        .contentType(MediaType.APPLICATION_JSON)) // 안쓰면 타입에러나서 415 에러남
+                .andExpect(status().isNotFound()) // 서버통신
+                .andDo(print());
+    }
 }
