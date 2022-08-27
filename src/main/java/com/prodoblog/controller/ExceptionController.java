@@ -1,12 +1,10 @@
 package com.prodoblog.controller;
 
-import com.prodoblog.exception.PostNotFound;
+import com.prodoblog.exception.ProdologException;
 import com.prodoblog.response.ErrorResponse;
-import com.prodoblog.service.PostService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -59,16 +57,26 @@ public class ExceptionController {
         return response;
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(PostNotFound.class)
     @ResponseBody
-    public ErrorResponse postNotFound(PostNotFound e) {
+    @ExceptionHandler(ProdologException.class)
+    public ResponseEntity<ErrorResponse> prodologException(ProdologException e) {
+
+        int statusCode = e.getStatusCode();
+
+//        if(e instanceof InvalidRequest) {
+//            // 400
+//        } else if(e instanceof PostNotFound) {
+//            // 404
+//        }
 
         // builer로 전환
-        ErrorResponse response = ErrorResponse.builder()
-                .code("404")
+        ErrorResponse body = ErrorResponse.builder()
+                .code(String.valueOf(statusCode))
                 .message(e.getMessage())
                 .build();
+
+        ResponseEntity<ErrorResponse> response = ResponseEntity.status(statusCode)
+                .body(body);
 
         return response;
     }

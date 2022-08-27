@@ -1,6 +1,7 @@
 package com.prodoblog.controller;
 
 import com.prodoblog.domain.Post;
+import com.prodoblog.exception.InvalidRequest;
 import com.prodoblog.request.PostCreate;
 import com.prodoblog.request.PostEdit;
 import com.prodoblog.request.PostSearch;
@@ -94,6 +95,10 @@ public class PostController {
     @PostMapping("/posts")
     public void post(@RequestBody @Valid PostCreate request){
         // 데이터를 검증하는 이유
+
+        if(request.getTitle().contains("엉터리")) {
+            throw new InvalidRequest();
+        }
 
         log.info("request={}", request);
         // case1. 저장한 데이터 Entity -> response로 응답하기
