@@ -284,4 +284,45 @@ class PostControllerTest {
                 .andExpect(status().isNotFound()) // 서버통신
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 수정")
+    void test10() throws Exception{
+        // given
+        PostEdit postEdit = PostEdit.builder()
+                .title("라이언")
+                .content("관악신림")
+                .build();
+
+        // expected
+        mockMvc.perform(patch("/posts/{postId}", 1L) // PATCH /posts/{postId}
+                        .contentType(MediaType.APPLICATION_JSON) // 안쓰면 타입에러나서 415 에러남
+                        .content(objectMapper.writeValueAsString(postEdit)))
+                .andExpect(status().isNotFound()) // 서버통신
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시글 작성시 제목에 '엉터리'는 포함될 수 없다.")
+    void test11() throws Exception {
+        // before
+        // 매번 삭제해줘야되는 신경쓰기 번거로움
+        postRepository.deleteAll();
+
+        PostCreate request = PostCreate.builder()
+                .title("애완견")
+                .content("멍멍이")
+                .build();
+
+        String json = objectMapper.writeValueAsString(request);
+
+        // when
+        mockMvc.perform(post("/posts")
+                                .contentType(MediaType.APPLICATION_JSON) // 안쓰면 타입에러나서 415 에러남
+                                .content(json)
+//                        .content("{\"title\": \"제목입니다.\", \"content\": \"내용입니다.\"}")
+                )   // application/json
+                .andExpect(status().isNotFound()) // 서버통신
+                .andDo(print());
+    }
 }
