@@ -1,5 +1,6 @@
 package com.prodoblog.request;
 
+import com.prodoblog.exception.InvalidRequest;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -35,5 +36,11 @@ public class PostCreate {
                 .title(title)
                 .content(content)
                 .build();
+    }
+
+    public void validate() {
+        if(title.contains("엉터리")) {
+            throw new InvalidRequest("title", "제목에 엉터리를 포함할 수 없습니다.");
+        }
     }
 }
